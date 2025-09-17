@@ -1,4 +1,4 @@
-# React UI Components
+# Assignment
 
 A small component library built with React, TypeScript, TailwindCSS and Storybook.
 
