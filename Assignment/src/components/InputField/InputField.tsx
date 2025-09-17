@@ -17,6 +17,8 @@ export interface InputFieldProps {
   showPasswordToggle?: boolean;
   type?: string;
   className?: string;
+  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -36,6 +38,8 @@ const InputField: React.FC<InputFieldProps> = ({
   showPasswordToggle = false,
   type = 'text',
   className = '',
+  onFocus,
+  onBlur,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const fieldId = useId();
@@ -100,9 +104,11 @@ const InputField: React.FC<InputFieldProps> = ({
           onChange={onChange}
           placeholder={placeholder}
           disabled={disabled || loading}
-          aria-invalid={hasError}
-          aria-required={required}
-          aria-busy={loading}
+          aria-invalid={hasError ? 'true' : 'false'}
+          aria-required={required ? 'true' : 'false'}
+          aria-busy={loading ? 'true' : 'false'}
+          onFocus={onFocus}
+          onBlur={onBlur}
           className={`${baseClasses} ${showClear || showPasswordToggle ? 'pr-12' : ''}`}
         />
 

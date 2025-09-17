@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import InputField from './components/InputField/InputField';
-import DataTable, { Column } from './components/DataTable/DataTable';
+import DataTable from './components/DataTable/DataTable';
+import type { Column } from './components/DataTable/DataTable';
 import "tailwindcss";
 
-interface Person {
+// ✅ Fix: Extend Record<string, unknown> to satisfy DataTable generic
+interface Person extends Record<string, unknown> {
   id: number;
   name: string;
   age: number;
@@ -37,8 +39,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-red-50 flex flex-col items-center justify-start p-6 md:p-8">
       <div className="w-full max-w-6xl space-y-12">
-        
-
         {/* InputField Section */}
         <section className="w-full bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
           <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6 text-center">
@@ -63,7 +63,7 @@ const App: React.FC = () => {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleInputChange('email')}
-                invalid={formData.email && !validateEmail(formData.email)}
+                invalid={!!formData.email && !validateEmail(formData.email)} // ✅ fixed boolean conversion
                 errorMessage={
                   formData.email && !validateEmail(formData.email)
                     ? 'Please enter a valid email address'

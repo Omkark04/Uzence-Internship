@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export interface Column<T> {
   key: string;
@@ -16,7 +16,8 @@ export interface DataTableProps<T> {
   emptyMessage?: string;
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+// Relaxed generic constraint so plain interfaces (Person, User, TestData) are accepted
+export function DataTable<T extends Record<string, any>>({
   data,
   columns,
   loading = false,
@@ -36,9 +37,14 @@ export function DataTable<T extends Record<string, unknown>>({
       const valueB = b[sortKey];
       if (valueA == null) return 1;
       if (valueB == null) return -1;
-      if (valueA < valueB) return sortDirection === 'asc' ? -1 : 1;
-      if (valueA > valueB) return sortDirection === 'asc' ? 1 : -1;
-      return 0;
+
+      // numeric vs string safe compare
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        return sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
+      }
+      return sortDirection === 'asc'
+        ? String(valueA).localeCompare(String(valueB))
+        : String(valueB).localeCompare(String(valueA));
     });
   }, [data, sortKey, sortDirection]);
 
@@ -55,9 +61,11 @@ export function DataTable<T extends Record<string, unknown>>({
 
   const handleRowToggle = (rowIndex: number) => {
     const updatedSelection = new Set(selectedRows);
-    updatedSelection.has(rowIndex)
-      ? updatedSelection.delete(rowIndex)
-      : updatedSelection.add(rowIndex);
+    if (updatedSelection.has(rowIndex)) {
+      updatedSelection.delete(rowIndex);
+    } else {
+      updatedSelection.add(rowIndex);
+    }
 
     setSelectedRows(updatedSelection);
     if (onRowSelect) {
@@ -101,16 +109,16 @@ export function DataTable<T extends Record<string, unknown>>({
                 <button
                   onClick={() => handleSort(column)}
                   className={`flex items-center gap-2 font-medium transition-colors ${
-                    column.sortable 
-                      ? 'hover:text-blue-700 cursor-pointer' 
+                    column.sortable
+                      ? 'hover:text-blue-700 cursor-pointer'
                       : 'cursor-default'
                   } ${sortKey === column.dataIndex ? 'text-blue-700' : 'text-gray-500'}`}
                 >
                   {column.title}
                   {column.sortable && (
-                    <span className="text-sm">
-                      {sortKey === column.dataIndex 
-                        ? (sortDirection === 'asc' ? '↑' : '↓') 
+                    <span className="text-sm" aria-hidden>
+                      {sortKey === column.dataIndex
+                        ? (sortDirection === 'asc' ? '↑' : '↓')
                         : '↕'}
                     </span>
                   )}
@@ -136,13 +144,16 @@ export function DataTable<T extends Record<string, unknown>>({
                     onChange={() => handleRowToggle(index)}
                     onClick={e => e.stopPropagation()}
                     className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    title="Select row"
+                    aria-label={`Select row ${index + 1}`}
                   />
                 </td>
               )}
               {columns.map(column => (
-                <td 
-                  key={column.key} 
+                <td
+                  key={column.key}
                   className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap"
+                  role="cell"
                 >
                   {String(row[column.dataIndex] ?? '')}
                 </td>
