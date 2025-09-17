@@ -8,5 +8,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: process.env.VITE_BASES_PATH || "/Uzence-Internship",
+  base: process.env.VITE_BASES_PATH,
 })
