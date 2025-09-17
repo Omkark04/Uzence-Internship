@@ -37,15 +37,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-red-50 flex flex-col items-center justify-start p-6 md:p-8">
       <div className="w-full max-w-6xl space-y-12">
-        {/* Header section */}
-        <header className="text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
-            React Component Showcase
-          </h1>
-          <p className="text-gray-600 mt-2 text-base font-bold">
-            Interactive examples of Input Fields and Data Tables built with React and Tailwind CSS
-          </p>
-        </header>
+        
 
         {/* InputField Section */}
         <section className="w-full bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
